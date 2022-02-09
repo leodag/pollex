@@ -1,0 +1,13 @@
+<section class="phx-hero" x-data="toplevel">
+  <h1><%= @poll.title %></h1>
+  <p><%= @poll.text %></p>
+  <%= form_for @conn, Routes.poll_path(@conn, :vote), fn f -> %>
+    <%= hidden_input(f, :poll) %>
+    <%= for {alternative, index} <- @poll.alternatives |> Enum.with_index() do %>
+      <%= label do %>
+        <%= radio_button f, :alternative, index %><%= alternative %><br>
+      <% end %>
+    <% end %>
+    <%= submit "Submit" %>
+  <% end %>
+</section>

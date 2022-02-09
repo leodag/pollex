@@ -1,0 +1,29 @@
+<section x-data="toplevel">
+  <section x-data="{ alternatives: [''] }">
+    <h1>Create a poll</h1>
+    <%= form_for @conn, Routes.poll_path(@conn, :create), [{"@submit.prevent", "createPoll"}, id: "createPollForm"], fn f -> %>
+      <div style="display: flex;">
+        Title <%= text_input(f, :title) %>
+        <div>
+          <%= label do %>
+            <%= checkbox f, :named %>Named
+          <% end %>
+        </div>
+      </div>
+      <br>
+      Description
+      <%= textarea(f, :text) %>
+      <br>
+      Alternatives
+      <template x-for="(alternative, index) in alternatives">
+        <div >
+          <input style="flex-basis: 0" name="alternatives[]" :id="$id('alternative')" x-model="alternatives[index]">
+          <button type="button" @click="alternatives.splice(index, 1)">-</button>
+        </div>
+      </template>
+      <button type="button" @click="alternatives.push('')">+</button>
+      <%= submit "Submit", [{":disabled", "creatingPoll"}] %>
+    <% end %>
+    <p x-show="pollName">Created poll <span x-text="pollName"></span></p>
+  </section>
+</section>
