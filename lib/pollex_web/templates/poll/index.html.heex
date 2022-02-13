@@ -1,5 +1,5 @@
 <section class="bg-zinc-100 p-8 rounded-lg" x-data="toplevel">
-  <%= form_for @conn, Routes.poll_path(@conn, :vote), [{"@submit.prevent", "vote"}, {"x-data", "{ alternatives: #{Jason.encode!(@poll.alternatives)} }"}, id: "voteForm", class: "flex flex-col gap-2"], fn f -> %>
+  <%= form_for @conn, Routes.poll_path(@conn, :vote), ["@submit.prevent": "vote", "x-data": "{ alternatives: #{Jason.encode!(@poll.alternatives)} }", id: "voteForm", class: "flex flex-col gap-2"], fn f -> %>
     <h1 class="text-4xl text-center"><%= @poll.title %></h1>
     <div class="self-center min-w-[50%]"><p><%= @poll.text %></p></div>
     <%= hidden_input(f, :poll) %>
@@ -14,6 +14,6 @@
         <div class="bg-zinc-600 h-full w-0 rounded-md transition-[width] duration-500 ease-out" :style="`order: ${index}; width: ${votes ? 100*votes[index]/voteTotal : '0'}%;`"></div>
       </template>
     </div>
-    <%= submit "Vote", [{"x-text", "voteText"}, class: "btn btn-blue self-center"] %>
+    <%= submit "Vote", "x-text": "voteText", class: "btn btn-blue self-center" %>
   <% end %>
 </section>
