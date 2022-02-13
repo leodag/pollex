@@ -24,14 +24,6 @@ a {
   @apply bg-blue-700;
 }
 
-.vote-grid {
-  grid-template-columns: auto 1fr;
-}
-
-.min-w-1\/2 {
-  min-width: 50%;
-}
-
 /* Alerts and form errors used by phx.new */
 .alert {
   padding: 15px;

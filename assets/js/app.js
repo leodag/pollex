@@ -40,6 +40,7 @@ Alpine.data('toplevel', () => ({
     voted: false,
     votes: undefined,
     voteTotal: undefined,
+    alreadyVoted: false,
     async createPoll() {
         const form = document.getElementById('createPollForm')
         const formData = new FormData(form)
@@ -74,7 +75,21 @@ Alpine.data('toplevel', () => ({
         this.voting = false
         this.voted = true
         this.votes = json.votes
+
+        if (json.result == 'already_voted') {
+            this.alreadyVoted = true
+        }
+
         this.voteTotal = json.votes.reduce((a, b) => a+b)
+    },
+    voteText() {
+        if (this.alreadyVoted) {
+            return 'You already voted!'
+        } else if (this.voted) {
+            return 'Voted!'
+        } else {
+            return 'Vote'
+        }
     }
 }))
 
