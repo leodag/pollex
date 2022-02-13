@@ -13,9 +13,9 @@ defmodule PollexWeb.PollController do
 
     Pollex.Poll.vote(poll_name, alternative)
 
-    poll = Pollex.Poll.get_votes(poll_name)
+    votes = Pollex.Poll.get_votes(poll_name)
 
-    json(conn, %{votes: poll.votes})
+    json(conn, %{votes: votes})
   end
 
   def create(conn, params) do

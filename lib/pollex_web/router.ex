@@ -14,15 +14,6 @@ defmodule PollexWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/", PollexWeb do
-    pipe_through :browser
-
-    get "/", PageController, :index
-    post "/vote", PollController, :vote
-    post "/create", PollController, :create
-    get "/:poll", PollController, :poll_page
-  end
-
   # Other scopes may use custom stacks.
   # scope "/api", PollexWeb do
   #   pipe_through :api
@@ -43,6 +34,15 @@ defmodule PollexWeb.Router do
 
       live_dashboard "/dashboard", metrics: PollexWeb.Telemetry
     end
+  end
+
+  scope "/", PollexWeb do
+    pipe_through :browser
+
+    get "/", PageController, :index
+    post "/vote", PollController, :vote
+    post "/create", PollController, :create
+    get "/:poll", PollController, :poll_page
   end
 
   # Enables the Swoosh mailbox preview in development.

@@ -1,29 +1,35 @@
 <section x-data="toplevel">
-  <section x-data="{ alternatives: [''] }">
-    <h1>Create a poll</h1>
-    <%= form_for @conn, Routes.poll_path(@conn, :create), [{"@submit.prevent", "createPoll"}, id: "createPollForm"], fn f -> %>
-      <div style="display: flex;">
-        Title <%= text_input(f, :title) %>
+  <section x-data="{ alternatives: [''] }" class="flex flex-col gap-2 bg-zinc-100 p-8 rounded-lg">
+    <div>
+      <%= form_for @conn, Routes.poll_path(@conn, :create), [{"@submit.prevent", "createPoll"}, id: "createPollForm", class: "flex flex-col gap-4"], fn f -> %>
+        <h1 class="text-4xl text-center">Create a poll</h1>
+        <div class="flex items-center gap-2">
+          <span>Title</span> <%= text_input(f, :title, class: "grow") %>
+          <div>
+            <%= label do %>
+              <%= checkbox f, :named, class: "mr-1" %>Named
+            <% end %>
+          </div>
+        </div>
         <div>
-          <%= label do %>
-            <%= checkbox f, :named %>Named
-          <% end %>
+          <span class="mb-1">Description</span>
+          <%= textarea(f, :text, class: ["w-full"]) %>
         </div>
-      </div>
-      <br>
-      Description
-      <%= textarea(f, :text) %>
-      <br>
-      Alternatives
-      <template x-for="(alternative, index) in alternatives">
-        <div >
-          <input style="flex-basis: 0" name="alternatives[]" :id="$id('alternative')" x-model="alternatives[index]">
-          <button type="button" @click="alternatives.splice(index, 1)">-</button>
+        <div>
+          <span class="mb-1">Alternatives</span>
+          <div class="flex flex-col gap-2">
+            <template x-for="(alternative, index) in alternatives">
+              <div class="flex">
+                <input type="text" name="alternatives[]" :id="$id('alternative')" x-model="alternatives[index]" class="w-full mr-2">
+                <button type="button" @click="alternatives.splice(index, 1)" class="btn btn-blue">-</button>
+              </div>
+            </template>
+            <button type="button" @click="alternatives.push('')" class="btn btn-blue self-start">+</button>
+          </div>
         </div>
-      </template>
-      <button type="button" @click="alternatives.push('')">+</button>
-      <%= submit "Submit", [{":disabled", "creatingPoll"}] %>
-    <% end %>
-    <p x-show="pollName">Created poll <span x-text="pollName"></span></p>
+        <%= submit "Submit", [{":disabled", "creatingPoll"}, class: "btn btn-blue self-center"] %>
+      <% end %>
+      <p x-show="pollName">Created poll <span x-text="pollName"></span></p>
+    </div>
   </section>
 </section>

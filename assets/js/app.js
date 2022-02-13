@@ -30,12 +30,16 @@ let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("
 let liveSocket = new LiveSocket("/live", Socket, {params: {_csrf_token: csrfToken}})
 
 function delay(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise(resolve => setTimeout(resolve, ms))
 }
 
 Alpine.data('toplevel', () => ({
     pollName: undefined,
     creatingPoll: false,
+    voting: false,
+    voted: false,
+    votes: undefined,
+    voteTotal: undefined,
     async createPoll() {
         const form = document.getElementById('createPollForm')
         const formData = new FormData(form)
@@ -52,6 +56,25 @@ Alpine.data('toplevel', () => ({
 
         this.creatingPoll = false
         this.pollName = json.name
+    },
+    async vote() {
+        const form = document.getElementById('voteForm')
+        const formData = new FormData(form)
+        const usp = new URLSearchParams(formData)
+
+        this.voting = true
+
+        const res = await fetch(form.action, {
+            method: 'POST',
+            body: usp
+        })
+
+        const json = await res.json()
+
+        this.voting = false
+        this.voted = true
+        this.votes = json.votes
+        this.voteTotal = json.votes.reduce((a, b) => a+b)
     }
 }))
 

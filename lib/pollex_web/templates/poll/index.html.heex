@@ -1,13 +1,18 @@
-<section class="phx-hero" x-data="toplevel">
-  <h1><%= @poll.title %></h1>
-  <p><%= @poll.text %></p>
-  <%= form_for @conn, Routes.poll_path(@conn, :vote), fn f -> %>
+<section class="bg-zinc-100 p-8 rounded-lg" x-data="toplevel">
+  <%= form_for @conn, Routes.poll_path(@conn, :vote), [{"@submit.prevent", "vote"}, {"x-data", "{ alternatives: #{Jason.encode!(@poll.alternatives)} }"}, id: "voteForm", class: "flex flex-col gap-2"], fn f -> %>
+    <h1 class="text-4xl text-center"><%= @poll.title %></h1>
+    <div class="self-center min-w-1/2"><p><%= @poll.text %></p></div>
     <%= hidden_input(f, :poll) %>
-    <%= for {alternative, index} <- @poll.alternatives |> Enum.with_index() do %>
-      <%= label do %>
-        <%= radio_button f, :alternative, index %><%= alternative %><br>
+    <div class="grid gap-2 vote-grid">
+      <%= for {alternative, index} <- @poll.alternatives |> Enum.with_index() do %>
+        <%= label do %>
+          <%= radio_button f, :alternative, index, class: "mr-2" %><%= alternative %>
+        <% end %>
+        <div>
+          <div class="bg-zinc-600 h-full w-0 rounded-md" :style=""></div>
+        </div>
       <% end %>
-    <% end %>
-    <%= submit "Submit" %>
+    </div>
+    <%= submit "Vote", [{"x-text", "voted ? 'Voted!' : 'Vote'"}, class: "btn btn-blue self-center"] %>
   <% end %>
 </section>
