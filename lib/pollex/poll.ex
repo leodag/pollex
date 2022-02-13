@@ -15,15 +15,24 @@ defmodule Pollex.Poll do
   end
 
   def vote(poll, index, identifier) do
-    GenServer.call(name(poll), {:vote, index, identifier})
+    call(poll, {:vote, index, identifier})
   end
 
   def get(poll) do
-    GenServer.call(name(poll), :get)
+    call(poll, :get)
   end
 
   def get_votes(poll) do
-    GenServer.call(name(poll), :get_votes)
+    call(poll, :get_votes)
+  end
+
+  defp call(poll, msg) do
+    try do
+      GenServer.call(name(poll), msg)
+    catch
+      :exit, {:noproc, _} ->
+        {:error, :poll_not_found}
+    end
   end
 
   def init(opts) do
@@ -47,11 +56,11 @@ defmodule Pollex.Poll do
   end
 
   def handle_call(:get, _from, state) do
-    {:reply, %{state | votes: Tuple.to_list(state.votes)}, state}
+    {:reply, {:ok, %{state | votes: Tuple.to_list(state.votes)}}, state}
   end
 
   def handle_call(:get_votes, _from, state) do
-    {:reply, Tuple.to_list(state.votes), state}
+    {:reply, {:ok, Tuple.to_list(state.votes)}, state}
   end
 
   def handle_call({:vote, alternative_idx, identifier}, _from, %{ votes: votes, identifiers: identifiers } = state) do
@@ -60,7 +69,7 @@ defmodule Pollex.Poll do
       identifiers = MapSet.put(identifiers, identifier)
       {:reply, {:ok, Tuple.to_list(votes)}, %{state | votes: votes, identifiers: identifiers}}
     else
-      {:reply, {:already_voted, Tuple.to_list(votes)}, state}
+      {:reply, {:error, {:already_voted, Tuple.to_list(votes)}}, state}
     end
   end
 end

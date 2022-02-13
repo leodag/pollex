@@ -4,7 +4,12 @@ defmodule PollexWeb.PollController do
   def poll_page(conn, params) do
     poll_name = params["poll"]
 
-    render(conn, "index.html", poll_name: poll_name, poll: Pollex.Poll.get(poll_name))
+    case Pollex.Poll.get(poll_name) do
+      {:ok, poll} ->
+        render(conn, "index.html", poll_name: poll_name, poll: poll)
+      {:error, :poll_not_found} ->
+        raise PollexWeb.PollNotFoundException, message: "Poll not found"
+    end
   end
 
   def vote(conn, params) do
@@ -24,15 +29,16 @@ defmodule PollexWeb.PollController do
 
     name = if named == "true", do: title, else: random_name()
 
-    IO.inspect conn
-
-    Pollex.Poll.create(name, [title: title, text: text, alternatives: alternatives])
-
-    json(conn, %{name: name})
+    case Pollex.Poll.create(name, [title: title, text: text, alternatives: alternatives]) do
+      {:ok, _} ->
+        json(conn, %{name: name, result: "created"})
+      {:error, {:already_started, _}} ->
+        json(conn, %{name: name, result: "already_exists"})
+    end
   end
 
   def random_name() do
-    characters = '0123456789abcdef'
+    characters = 'abcdefghijkl'
 
     for _ <- 1..10, into: "", do: <<Enum.random(characters)>>
   end
