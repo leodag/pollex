@@ -14,8 +14,8 @@ defmodule Pollex.Poll do
     start_link([{:name, name} | opts])
   end
 
-  def vote(poll, index) do
-    GenServer.cast(name(poll), {:vote, index})
+  def vote(poll, index, identifier) do
+    GenServer.call(name(poll), {:vote, index, identifier})
   end
 
   def get(poll) do
@@ -32,6 +32,7 @@ defmodule Pollex.Poll do
     alternatives = Keyword.get(opts, :alternatives)
     votes = for _ <- 1..length(alternatives), do: 0
     votes = List.to_tuple(votes)
+    identifiers = MapSet.new()
 
     {
       :ok,
@@ -39,7 +40,8 @@ defmodule Pollex.Poll do
         title: title,
         text: text,
         alternatives: alternatives,
-        votes: votes
+        votes: votes,
+        identifiers: identifiers
       }
     }
   end
@@ -52,8 +54,15 @@ defmodule Pollex.Poll do
     {:reply, Tuple.to_list(state.votes), state}
   end
 
-  def handle_cast({:vote, alternative_idx}, %{ votes: votes } = state) do
-    votes = put_elem(votes, alternative_idx, elem(votes, alternative_idx) + 1)
-    {:noreply, %{state | votes: votes}}
+  def handle_call({:vote, alternative_idx, identifier}, _from, %{ votes: votes, identifiers: identifiers } = state) do
+    IO.inspect(identifiers)
+    IO.inspect(Enum.member?(identifiers, identifier))
+    if not Enum.member?(identifiers, identifier) do
+      votes = put_elem(votes, alternative_idx, elem(votes, alternative_idx) + 1)
+      identifiers = MapSet.put(identifiers, identifier)
+      {:reply, {:ok, Tuple.to_list(votes)}, %{state | votes: votes, identifiers: identifiers}}
+    else
+      {:reply, {:already_voted, Tuple.to_list(votes)}, state}
+    end
   end
 end
