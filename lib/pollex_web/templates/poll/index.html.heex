@@ -4,14 +4,15 @@
     <div class="self-center min-w-1/2"><p><%= @poll.text %></p></div>
     <%= hidden_input(f, :poll) %>
     <div class="grid gap-2 vote-grid">
-      <%= for {alternative, index} <- @poll.alternatives |> Enum.with_index() do %>
-        <%= label do %>
-          <%= radio_button f, :alternative, index, class: "mr-2" %><%= alternative %>
-        <% end %>
-        <div>
-          <div class="bg-zinc-600 h-full w-0 rounded-md" :style=""></div>
-        </div>
-      <% end %>
+      <template x-for="(alternative, index) in alternatives">
+        <label :style="`order: ${index * 2};`">
+          <input type="radio" name="alternative" :value="index" class="mr-2"><span x-text="alternative"></span>
+        </label>
+      </template>
+      <!-- the style=order is a hack since we can't have more than one child in a template -->
+      <template x-for="(alternative, index) in alternatives">
+        <div class="bg-zinc-600 h-full w-0 rounded-md" :style="`order: ${index * 2 + 1}; width: ${votes ? 100*votes[index]/voteTotal : '0'}%;`"></div>
+      </template>
     </div>
     <%= submit "Vote", [{"x-text", "voted ? 'Voted!' : 'Vote'"}, class: "btn btn-blue self-center"] %>
   <% end %>
