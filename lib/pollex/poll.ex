@@ -55,8 +55,6 @@ defmodule Pollex.Poll do
   end
 
   def handle_call({:vote, alternative_idx, identifier}, _from, %{ votes: votes, identifiers: identifiers } = state) do
-    IO.inspect(identifiers)
-    IO.inspect(Enum.member?(identifiers, identifier))
     if not Enum.member?(identifiers, identifier) do
       votes = put_elem(votes, alternative_idx, elem(votes, alternative_idx) + 1)
       identifiers = MapSet.put(identifiers, identifier)
