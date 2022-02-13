@@ -1,5 +1,9 @@
 # Pollex
 
+This is a simple server for creating polls. Just a project I made to play with Phoenix, Alpine.js and TailwindCSS.
+
+# Running
+
 To start your Phoenix server:
 
   * Install dependencies with `mix deps.get`
