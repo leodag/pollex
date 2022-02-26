@@ -16,9 +16,12 @@ defmodule PollexWeb.PollController do
     poll_name = params["poll"]
     alternative = String.to_integer(params["alternative"])
 
-    {result, votes} = Pollex.Poll.vote(poll_name, alternative, conn.remote_ip)
-
-    json(conn, %{result: result, votes: votes})
+    case Pollex.Poll.vote(poll_name, alternative, conn.remote_ip) do
+      {:ok, votes} ->
+        json(conn, %{result: :ok, votes: votes})
+      {:error, {reason, votes}} ->
+        json(conn, %{result: reason, votes: votes})
+    end
   end
 
   def create(conn, params) do
