@@ -5,13 +5,12 @@
     <%= hidden_input(f, :poll) %>
     <div class="grid gap-2 grid-cols-[auto_1fr]">
       <template x-for="(alternative, index) in alternatives">
-        <label :style="`order: ${index};`">
-          <input type="radio" name="alternative" :value="index" class="mr-2"><span x-text="alternative"></span>
-        </label>
-      </template>
-      <!-- the style=order is a hack since we can't have more than one child in a template -->
-      <template x-for="(alternative, index) in alternatives">
-        <div class="bg-zinc-600 h-full w-0 rounded-md transition-[width] duration-500 ease-out" :style="`order: ${index}; width: ${votes ? 100*votes[index]/voteTotal : '0'}%;`"></div>
+        <div class="contents">
+          <label>
+            <input type="radio" name="alternative" :value="index" class="mr-2"><span x-text="alternative"></span>
+          </label>
+          <div class="bg-zinc-600 h-full w-0 rounded-md transition-[width] duration-500 ease-out" :style="`width: ${votes ? 100*votes[index]/voteTotal : '0'}%;`"></div>
+        </div>
       </template>
     </div>
     <%= submit "Vote", "x-text": "voteText", class: "btn btn-blue self-center" %>
